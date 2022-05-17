@@ -45,7 +45,7 @@ class GameFragment: Fragment() {
     }
 
     private fun onSkip() {
-        if (viewModel.word.isNotEmpty()) {
+        if (viewModel.word.word.isNotEmpty()) {
             viewModel.onSkip()
             updateScore()
             updateWord()
@@ -57,7 +57,7 @@ class GameFragment: Fragment() {
     }
 
     private fun onCorrect() {
-        if (viewModel.word.isNotEmpty()) {
+        if (viewModel.word.word.isNotEmpty()) {
             viewModel.onCorrect()
             updateScore()
             updateWord()
@@ -76,7 +76,8 @@ class GameFragment: Fragment() {
     }
 
     private fun updateWord() {
-        binding?.wordText?.text = viewModel.word
+        binding?.wordText?.text = viewModel.word.word
+        binding?.forbiddentext?.text = viewModel.word.forbiddenWords.toString()
 
     }
 
