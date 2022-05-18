@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.navigationsample.databinding.FragmentGameBinding
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class GameFragment: Fragment() {
 
@@ -27,8 +30,17 @@ class GameFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[GameViewModel::class.java]
-        updateWord()
-        updateScore()
+        lifecycleScope.launch {
+            viewModel.word.collect {
+                if(it.word.isNotEmpty()){
+                    updateWord()
+                    updateScore()
+                } else{
+                    onEndGame()
+                }
+
+            }
+        }
 
         binding?.apply {
             skipButton.setOnClickListener { onSkip() }
@@ -45,27 +57,11 @@ class GameFragment: Fragment() {
     }
 
     private fun onSkip() {
-        if (viewModel.word.word.isNotEmpty()) {
             viewModel.onSkip()
-            updateScore()
-            updateWord()
-        } else {
-            onEndGame()
-        }
-
 
     }
-
     private fun onCorrect() {
-        if (viewModel.word.word.isNotEmpty()) {
             viewModel.onCorrect()
-            updateScore()
-            updateWord()
-        } else {
-            onEndGame()
-        }
-
-
     }
 
     private fun onEndGame() {
@@ -76,8 +72,8 @@ class GameFragment: Fragment() {
     }
 
     private fun updateWord() {
-        binding?.wordText?.text = viewModel.word.word
-        binding?.forbiddentext?.text = viewModel.word.forbiddenWords.toString()
+        binding?.wordText?.text = viewModel.word.value.word
+        binding?.forbiddentext?.text = viewModel.word.value.forbiddenWords.toString()
 
     }
 

@@ -2,10 +2,11 @@ package com.example.navigationsample.game
 
 import androidx.lifecycle.ViewModel
 import com.example.navigationsample.model.Word
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class GameViewModel : ViewModel() {
 
-    var word = Word("", listOf())
+    var word: MutableStateFlow<Word> = MutableStateFlow(Word("", listOf()))
     var score = 0
 
    private var wordlist: MutableList<Word> = mutableListOf()
@@ -16,17 +17,12 @@ class GameViewModel : ViewModel() {
     }
 
     fun onSkip() {
-        if (wordlist.isNotEmpty()){
-            score--
-        }
+        score--
         onNextWord()
-
     }
 
     fun onCorrect() {
-        if(wordlist.isNotEmpty()) {
-            score++
-        }
+        score++
         onNextWord()
 
     }
@@ -49,7 +45,7 @@ class GameViewModel : ViewModel() {
     }
 
     private fun onNextWord() {
-        word = if(wordlist.isNotEmpty()) {
+        word.value = if(wordlist.isNotEmpty()) {
             wordlist.removeAt(0)
         } else {
             Word("", listOf())
